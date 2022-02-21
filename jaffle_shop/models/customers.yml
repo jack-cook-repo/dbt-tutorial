@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: customers
+    columns:
+      - name: customer_id
+        description: 'Unique identifier for a customer'
+        tests:
+          - unique
+          - not_null
