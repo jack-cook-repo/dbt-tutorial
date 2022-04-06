@@ -11,8 +11,10 @@ orders AS (
 customer_orders AS (
     SELECT
     customer_id,
-    MIN(order_date) AS first_order_date,
-    MAX(order_date) AS most_recent_order_date,
+    -- A very convoluted example of Jinja templated SQL
+    {% for (agg, prefix) in [("MIN", 'first'), ("MAX", 'most_recent')] %}
+    {{agg}}(order_date) as {{prefix}}_order_date,
+    {% endfor %}
     COUNT(order_id) AS number_of_orders
 
     FROM orders
