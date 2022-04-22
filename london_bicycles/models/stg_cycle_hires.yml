@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: stg_cycle_hires
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: 'hire_end_timestamp > hire_start_timestamp'
+      - dbt_utils.expression_is_true:
+          expression: 'DATE_DIFF(hire_end_timestamp, hire_start_timestamp, SECOND) = hire_duration'
+    columns:
+      - name: "rental_id"
+        description: Unique identifier for a bike hire
+        tests:
+          - unique
+          - not_null
+
+      - name: "hire_duration"
+        description: How long the bike was hired for, in seconds
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '> 0'
+
+      - name: "hire_end_timestamp"
+        description: Timestamp when the hire session ended
+        tests:
+          - not_null
+
+      - name: "end_station_id"
+        description: Unique identifier of the station at the end of the cycle hire
+        tests:
+          - relationships:
+              to: ref('stg_cycle_stations')
+              field: id
+
+      - name: "end_station_name"
+        description: Name of the station at the end of the cycle hire
+        tests:
+          - not_null
+
+      - name: "hire_start_timestamp"
+        description: Timestamp when the hire session started
+        tests:
+          - not_null
+
+      - name: "start_station_id"
+        description: Unique identifier of the station at the start of the cycle hire
+        tests:
+          - relationships:
+              to: ref('stg_cycle_stations')
+              field: id
+
+      - name: "start_station_name"
+        description: Name of the station at the start of the cycle hire
+        tests:
+          - not_null

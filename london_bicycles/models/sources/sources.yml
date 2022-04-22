@@ -1,0 +1,126 @@
+ #Generated automatically, please update after generation
+version: 2
+
+sources:
+  - name: london_bicycle_hire
+    description: Bicycle hire public dataset
+    project: bigquery-public-data
+    dataset: london_bicycles
+    tables:
+
+      - name: src_cycle_hires
+        identifier: cycle_hire
+        columns:
+          - name: "rental_id"
+            description: Unique identifier for a bike hire
+            tests:
+              - unique
+              - not_null
+
+          - name: "duration"
+            description: How long the bike was hired for, in seconds
+            tests:
+              - not_null
+
+          - name: "bike_id"
+            description: Unique identifier for a bike
+
+          - name: "end_date"
+            description: Timestamp when the hire session ended
+            tests:
+              - not_null
+
+          - name: "end_station_id"
+            description: Unique identifier of the station at the end of the cycle hire
+
+          - name: "end_station_name"
+            description: Name of the station at the end of the cycle hire
+            tests:
+              - not_null
+
+          - name: "start_date"
+            description: Timestamp when the hire session started
+            tests:
+              - not_null
+
+          - name: "start_station_id"
+            description: Unique identifier of the station at the start of the cycle hire
+
+          - name: "start_station_name"
+            description: Name of the station at the start of the cycle hire
+            tests:
+              - not_null
+
+      - name: src_cycle_stations
+        identifier: cycle_stations
+        description: Bicycle stations
+
+        columns:
+          - name: "id"
+            description: Unique identifier for a bike docking station
+            tests:
+              - unique
+              - not_null
+
+          - name: "installed"
+            description: installed
+            tests:
+              - all_values_equal_to:
+                  equal_to: 'TRUE'
+
+          - name: "latitude"
+            description: latitude
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "BETWEEN 51.4 AND 51.6"
+
+          - name: "locked"
+            description: locked
+
+          - name: "longitude"
+            description: longitude
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "BETWEEN -0.3 AND 0.1"
+
+          - name: "name"
+            description: Name of the cycle hire station
+            tests:
+              - not_null
+
+          - name: "bikes_count"
+            description: How many bikes were docked in the station
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "BETWEEN 0 AND docks_count"
+
+          - name: "docks_count"
+            description: > 
+              How many bike docks there are total at the station. 
+              Not equal to sum of bikes_count + nbEmptyDocks.
+
+          - name: "nbEmptyDocks"
+            description: How many empty docks were available at the station
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "BETWEEN 0 AND docks_count"
+
+          - name: "temporary"
+            description: Whether the station is temporary or not
+            tests:
+              - accepted_values:
+                  values: [TRUE, FALSE]
+                  quote: false
+
+          - name: "terminal_name"
+            description: Unsure what this shows
+
+          - name: "install_date"
+            description: When the station was installed
+
+          - name: "removal_date"
+            description: removal_date
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: ">= install_date"
+                  condition: "removal_date IS NOT NULL"

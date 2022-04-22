@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_cycle_stations
+    columns:
+      - name: "id"
+        description: Unique identifier for a bike docking station
+        tests:
+          - unique
+          - not_null
+
+      - name: "latitude"
+        description: latitude
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 51.4 AND 51.6"
+
+      - name: "longitude"
+        description: longitude
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN -0.3 AND 0.1"
+
+      - name: "name"
+        description: Name of the cycle hire station
+        tests:
+          - not_null
+
+      - name: "docks_count"
+        description: > 
+          How many bike docks there are total at the station. 
+          Not equal to sum of bikes_count + nbEmptyDocks.
+
+      - name: "install_date"
+        description: When the station was installed
+
+      - name: "removal_date"
+        description: removal_date
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= install_date"
+              condition: "removal_date IS NOT NULL"
