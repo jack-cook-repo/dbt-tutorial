@@ -1,1 +1,0 @@
-SELECT * FROM {{ source('looker_ecom', 'src_order_items') }}
