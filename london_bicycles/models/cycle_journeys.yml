@@ -1,0 +1,69 @@
+version: 2
+
+models:
+- name: cycle_journeys
+  description: > 
+    Cycle hire information with additional data on the start & end docking
+    stations, plus some distance calculations (direct & manhattan)
+
+  columns:
+    - name: rental_id
+      description: Unique identifier for a bike hire
+      tests:
+        - not_null
+        - unique
+        - column_is_identical_to:
+            reference_model: ref('stg_cycle_hires')
+            reference_column: rental_id
+
+    - name: hire_start_timestamp
+      description: Timestamp when the hire session started
+
+    - name: hire_end_timestamp
+      description: Timestamp when the hire session ended
+
+    - name: hire_duration_mins
+      description: How long the bike was hired for, in minutes
+
+    - name: start_station_name
+      description: Name of the station where the hire was started
+
+    - name: start_station_latitude
+      description: Latitude of the station where the hire was started
+
+    - name: start_station_longitude
+      description: Longitude of the station where the hire was started
+
+    - name: end_station_name
+      description: Name of the station where the hire was ended
+
+    - name: end_station_latitude
+      description: Latitude of the station where the hire was started
+
+    - name: end_station_longitude
+      description: Longitude of the station where the hire was started
+
+    - name: journey_distance_manhattan_km
+      description:  > 
+        Distance between the start and end stations in km, calculated by Manhattan distance,
+        which is:
+        - The absolute difference between the latitude co-ordinates * 111km, plus 
+        - The cosine of the latitude (in radians) * 111km * the absolute difference in longitude
+      tests:
+        - dbt_utils.expression_is_true:
+            expression: '>= 0'
+
+    - name: journey_distance_direct_km
+      description: >
+        Distance between the start and end stations in km, calculated as a direct distance
+        using BigQuery's ST_DISTANCE function.
+
+        In cases where this is greater than the journey_distance_manhattan, due to edge cases
+        where a straight line distance is calculated as having a slightly lower Manhattan
+        distance because of small inaccuracies in our assumptions, we take the value for 
+        journey_distance_direct_km.
+
+        This discrepancy, when assessed, was a maximum of 20 metres.
+      tests:
+         - dbt_utils.expression_is_true:
+            expression: '<= journey_distance_manhattan_km'
