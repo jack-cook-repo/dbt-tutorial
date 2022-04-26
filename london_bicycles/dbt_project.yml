@@ -35,3 +35,6 @@ models:
   london_bicycles:
     # Config indicated by + and applies to all files under models/
     +materialized: view
+    +persist_docs: 
+      relation: true
+      columns: true
