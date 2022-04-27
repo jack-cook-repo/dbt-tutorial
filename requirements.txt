@@ -1,2 +1,4 @@
 dbt-bigquery==1.0.0
 dbt-rpc==0.1.2
+dbt-metabase==0.8.5
+sqlfluff
