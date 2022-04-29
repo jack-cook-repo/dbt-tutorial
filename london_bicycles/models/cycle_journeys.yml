@@ -15,33 +15,49 @@ models:
         - column_is_identical_to:
             reference_model: ref('stg_cycle_hires')
             reference_column: rental_id
+      meta:
+        metabase.semantic_type: type/PK
 
     - name: hire_start_timestamp
       description: Timestamp when the hire session started
+      meta:
+        metabase.semantic_type: type/CreationTimestamp
 
     - name: hire_end_timestamp
       description: Timestamp when the hire session ended
+      meta:
+        metabase.semantic_type: type/CreationTimestamp
 
     - name: hire_duration_mins
       description: How long the bike was hired for, in minutes
+      meta:
+        metabase.semantic_type: type/Quantity
 
     - name: start_station_name
       description: Name of the station where the hire was started
 
     - name: start_station_latitude
       description: Latitude of the station where the hire was started
+      meta:
+        metabase.semantic_type: type/Latitude
 
     - name: start_station_longitude
       description: Longitude of the station where the hire was started
+      meta:
+        metabase.semantic_type: type/Longitude
 
     - name: end_station_name
       description: Name of the station where the hire was ended
 
     - name: end_station_latitude
       description: Latitude of the station where the hire was started
+      meta:
+        metabase.semantic_type: type/Latitude
 
     - name: end_station_longitude
       description: Longitude of the station where the hire was started
+      meta:
+        metabase.semantic_type: type/Longitude
 
     - name: journey_distance_manhattan_km
       description:  > 
@@ -52,6 +68,8 @@ models:
       tests:
         - dbt_utils.expression_is_true:
             expression: '>= 0'
+      meta:
+        metabase.semantic_type: type/Quantity
 
     - name: journey_distance_direct_km
       description: >
@@ -64,6 +82,8 @@ models:
         journey_distance_direct_km.
 
         This discrepancy, when assessed, was a maximum of 20 metres.
+      meta:
+        metabase.semantic_type: type/Quantity
       tests:
-         - dbt_utils.expression_is_true:
+        - dbt_utils.expression_is_true:
             expression: '<= journey_distance_manhattan_km'
