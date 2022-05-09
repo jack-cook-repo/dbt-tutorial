@@ -74,16 +74,17 @@ models:
     - name: journey_distance_direct_km
       description: >
         Distance between the start and end stations in km, calculated as a direct distance
-        using BigQuery's ST_DISTANCE function.
-
-        In cases where this is greater than the journey_distance_manhattan, due to edge cases
-        where a straight line distance is calculated as having a slightly lower Manhattan
-        distance because of small inaccuracies in our assumptions, we take the value for 
-        journey_distance_direct_km.
-
-        This discrepancy, when assessed, was a maximum of 20 metres.
+        using BigQuery's ST_DISTANCE function. Always <= journey_distance_manhattan_km
       meta:
         metabase.semantic_type: type/Quantity
+        metabase.points_of_interest: Test text
+        metabase.caveats: >
+          In cases where this is greater than the journey_distance_manhattan, due to edge cases
+          where a straight line distance is calculated as having a slightly lower Manhattan
+          distance because of small inaccuracies in our assumptions, we take the value for 
+          journey_distance_direct_km.
+
+          This discrepancy, when assessed, was a maximum of 20 metres.
       tests:
         - dbt_utils.expression_is_true:
             expression: '<= journey_distance_manhattan_km'
