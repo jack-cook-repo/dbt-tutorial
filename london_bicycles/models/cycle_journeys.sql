@@ -12,11 +12,13 @@ WITH cycle_hires AS (
         rental_id,
         hire_duration,
         hire_end_timestamp,
-        end_station_id,
-        end_station_name,
         hire_start_timestamp,
         start_station_id,
-        start_station_name
+        start_station_name,
+        start_station_area,
+        end_station_id,
+        end_station_name,
+        end_station_area
 
     FROM {{ ref('stg_cycle_hires') }}
 ),
@@ -34,16 +36,18 @@ cycle_stations AS (
 
 joined AS (
     SELECT
-        rental_id,
-        hire_start_timestamp,
-        hire_end_timestamp,
-        start_station_name,
+        ch.rental_id,
+        ch.hire_start_timestamp,
+        ch.hire_end_timestamp,
+        ch.start_station_name,
+        ch.start_station_area,
         cs_start.latitude AS start_station_latitude,
         cs_start.longitude AS start_station_longitude,
-        end_station_name,
+        ch.end_station_name,
+        ch.end_station_area,
         cs_end.latitude AS end_station_latitude,
         cs_end.longitude AS end_station_longitude,
-        ROUND(CAST(hire_duration / 60 AS NUMERIC), 2) AS hire_duration_mins,
+        ROUND(CAST(ch.hire_duration / 60 AS NUMERIC), 2) AS hire_duration_mins,
         ROUND(
             CAST(
                 ST_DISTANCE(
@@ -93,8 +97,11 @@ manhattan_calc AS (
 
 SELECT
     * EXCEPT(journey_distance_direct_km),
-    -- ~48k edge cases (out of ~22m rows) where the direct distance is less than the manhattan distance by <0.02km
-    -- Likely caused by some minor precision errors with our assumptions (e.g. 111km per latitude line)
+    /*
+    ~48k edge cases (out of ~22m rows) where the direct distance is
+    less than the manhattan distance by <0.02km. Likely caused by
+    some minor precision errors with our assumptions (e.g. 111km per latitude line)
+    */
     LEAST(
         journey_distance_manhattan_km, journey_distance_direct_km
     ) AS journey_distance_direct_km

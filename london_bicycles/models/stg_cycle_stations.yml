@@ -26,6 +26,12 @@ models:
         tests:
           - not_null
 
+      - name: "area"
+        description: >
+          name column split by comma, and the last value in the resulting array taken.
+          e.g. Narrow Street, Limehouse --> Limehouse
+          If there is more than one split, or no split at all, the same logic applies
+
       - name: "docks_count"
         description: > 
           How many bike docks there are total at the station. 

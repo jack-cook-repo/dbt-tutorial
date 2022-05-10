@@ -38,6 +38,13 @@ models:
         tests:
           - not_null
 
+      - name: "end_station_area"
+        description: > 
+          Area of the end cycle station, taken as the last value from the end_station_name 
+          if the name is split by a comma
+        tests:
+          - not_null
+
       - name: "hire_start_timestamp"
         description: Timestamp when the hire session started
         tests:
@@ -52,5 +59,12 @@ models:
 
       - name: "start_station_name"
         description: Name of the station at the start of the cycle hire
+        tests:
+          - not_null
+      
+      - name: "start_station_area"
+        description: > 
+          Area of the start cycle station, taken as the last value from the start_station_name 
+          if the name is split by a comma
         tests:
           - not_null
