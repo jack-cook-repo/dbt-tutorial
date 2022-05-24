@@ -28,6 +28,18 @@ models:
       meta:
         metabase.semantic_type: type/CreationTimestamp
 
+    - name: hire_start_hour
+      description: Hour of day when the hire session started
+      tests:
+        - dbt_utils.expression_is_true:
+            expression: 'BETWEEN 0 AND 23'
+
+    - name: hire_start_weekday
+      description: Day of week when the hire session started, with 1 is Monday and 7 as Sunday
+      tests:
+        - dbt_utils.expression_is_true:
+            expression: 'BETWEEN 1 AND 7'
+
     - name: hire_duration_mins
       description: How long the bike was hired for, in minutes
       meta:

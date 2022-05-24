@@ -47,6 +47,8 @@ joined AS (
         ch.end_station_area,
         cs_end.latitude AS end_station_latitude,
         cs_end.longitude AS end_station_longitude,
+        EXTRACT(HOUR FROM hire_start_timestamp) AS hire_start_hour,
+        EXTRACT(DAYOFWEEK FROM hire_start_timestamp) AS hire_start_weekday,
         ROUND(CAST(ch.hire_duration / 60 AS NUMERIC), 2) AS hire_duration_mins,
         ROUND(
             CAST(
@@ -96,7 +98,7 @@ manhattan_calc AS (
 )
 
 SELECT
-    * EXCEPT(journey_distance_direct_km),
+    * EXCEPT(journey_distance_direct_km, hire_start_weekday),
     /*
     ~48k edge cases (out of ~22m rows) where the direct distance is
     less than the manhattan distance by <0.02km. Likely caused by
@@ -104,6 +106,8 @@ SELECT
     */
     LEAST(
         journey_distance_manhattan_km, journey_distance_direct_km
-    ) AS journey_distance_direct_km
+    ) AS journey_distance_direct_km,
+    -- Hack to shift Sunday from 1 to 7, keeping Saturday/Sunday grouped > 5
+    IF(hire_start_weekday = 1, 7, hire_start_weekday - 1) AS hire_start_weekday
 
 FROM manhattan_calc
